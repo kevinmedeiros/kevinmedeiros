@@ -174,6 +174,10 @@ def main():
             posts = json.load(open(OUT)).get("posts") or []
 
     payload = {**stats, "posts": posts, "updated": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
+    if os.path.exists(OUT):  # keep the old timestamp when nothing changed, so the daily run commits only real changes
+        prev = json.load(open(OUT))
+        if {k: v for k, v in prev.items() if k != "updated"} == {k: v for k, v in payload.items() if k != "updated"}:
+            payload["updated"] = prev.get("updated", payload["updated"])
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w") as f:
         json.dump(payload, f, indent=2)

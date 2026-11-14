@@ -39,11 +39,19 @@ Texture: a 10 px minor grid and a 50 px major grid at 4–9 % opacity, plus frac
 Section headers are navy title tabs followed by a scale bar drawn in `RULE`.
 
 ## Motion
-- Content is complete and legible at t=0. Motion only adds to a visible drawing.
-- There is one authored entrance, on the hero only: a plotter pass. A gold pen retraces the axonometric once while a crosshair sweeps the sheet left to right. It takes about 2.4 s, uses an exponential ease-out, and then fades.
-- There is one meaningful loop: the **GitOps pulse**. A gold packet climbs the dashed sync path from Git through the layers to Argo CD every 3.2 s. The gold pod on the cluster layer lights up as the packet reaches it, which reads as reconciliation.
-- Revision row C (the latest) has a slow 50 % breathe on its delta triangle, as the only secondary loop.
-- `prefers-reduced-motion: reduce` turns off all animation, and the static frame is the full design.
+GitHub serves the SVGs as `<img>` through camo, so hover does not work. All motion is automatic, slow and staggered across pieces. Content is complete at t=0, and every animation only adds to a drawing that is already visible.
+
+| Piece | Entrance (once) | Loop (≥6 s, staggered) |
+|---|---|---|
+| Hero | Gold plotter pass over the axonometric (~2.4 s); the RECORD digits roll one odometer turn and land on the real value | CAD cursor wanders the sheet (22 s); GitOps pulse climbs Git → Argo CD and lights the reconciled pod (6 s) |
+| Sheet tabs | Tab outline traced by the pen | A read-head scans the scale bar (9 s alternate, offset 2.3 s per sheet) |
+| BOM | Row rules traced top to bottom | An inspection bar steps through the BOM items (2 s per item) |
+| Detail plates | Detail symbol circle traced | The pen redraws the icon in gold, A → B → C → D (12 s cycle, 3 s apart) |
+| Revisions | Older rows: bottom rule traced | Latest row: active gold marker, a playhead along the rule (8 s), and the triangle breathes (6 s) |
+| All notes | none | The arrow nudges (6 s) |
+| Stamps | Stamped in (scale 1.1 → 1, staggered) | A light re-press every 16 s, offset per stamp |
+
+With `prefers-reduced-motion: reduce`, every animation stops and the overlays are hidden. The generator is deterministic, so fonts are subset without timestamps and the daily run commits only real changes.
 
 ## Light and dark
 Every piece paints its own navy ground or plate. Anything outside a plate uses `RULE`, which reads on `#ffffff` and on `#0d1117`. Both themes are checked at 830 px.

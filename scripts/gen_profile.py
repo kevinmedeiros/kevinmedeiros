@@ -106,7 +106,7 @@ def font_css(text):
             data = open(path, "rb").read()
             if _subset is not None:
                 try:
-                    f = _TTFont(path)
+                    f = _TTFont(path, recalcTimestamp=False)
                     o = _subset.Options()
                     o.flavor = "woff2"
                     o.layout_features = ["kern", "liga", "tnum", "lnum"]
@@ -129,15 +129,34 @@ text{{font-kerning:normal}}
 .plot{{stroke-dasharray:var(--l);stroke-dashoffset:var(--l);animation:plot 1.9s {EASE} forwards,fadeout .8s ease-out 2.4s forwards}}
 @keyframes plot{{to{{stroke-dashoffset:0}}}}
 @keyframes fadeout{{to{{opacity:0}}}}
-.sweep{{animation:sweep 2.2s {EASE} .15s both}}
-@keyframes sweep{{0%{{transform:translateX(0);opacity:1}}85%{{opacity:1}}100%{{transform:translateX(var(--d));opacity:0}}}}
-.pulse{{animation:pulse 3.2s cubic-bezier(.45,0,.55,1) 1.6s infinite both}}
-@keyframes pulse{{0%{{transform:translateY(0);opacity:0}}8%{{opacity:1}}88%{{opacity:1}}100%{{transform:translateY(var(--h));opacity:0}}}}
-.recon{{animation:recon 3.2s ease-out 1.6s infinite}}
-@keyframes recon{{0%,38%{{fill-opacity:0}}46%{{fill-opacity:.85}}100%{{fill-opacity:0}}}}
-.breathe{{animation:breathe 2.8s ease-in-out infinite}}
+.pulse{{animation:pulse 6s cubic-bezier(.45,0,.55,1) 1.6s infinite both}}
+@keyframes pulse{{0%{{transform:translateY(0);opacity:0}}6%{{opacity:1}}50%{{opacity:1;transform:translateY(var(--h))}}54%,100%{{opacity:0;transform:translateY(var(--h))}}}}
+.recon{{animation:recon 6s ease-out 1.6s infinite}}
+@keyframes recon{{0%,20%{{fill-opacity:0}}25%{{fill-opacity:.85}}60%,100%{{fill-opacity:0}}}}
+.breathe{{animation:breathe 6s ease-in-out infinite}}
 @keyframes breathe{{50%{{opacity:.15}}}}
-@media (prefers-reduced-motion:reduce){{*{{animation:none!important}}.plot,.sweep,.pulse{{display:none}}}}
+.trace{{stroke-dasharray:1;stroke-dashoffset:1;animation:trace 1.5s {EASE} var(--td,0s) forwards,fadeout 1s ease-out calc(var(--td,0s) + 1.8s) forwards}}
+@keyframes trace{{to{{stroke-dashoffset:0}}}}
+.pen *{{stroke-dasharray:1;stroke-dashoffset:1;animation:pen 12s ease-in-out var(--pd,0s) infinite}}
+@keyframes pen{{0%{{stroke-dashoffset:1;opacity:1}}16%{{stroke-dashoffset:0;opacity:1}}26%,100%{{stroke-dashoffset:0;opacity:0}}}}
+.curx{{animation:curx 22s ease-in-out infinite}}
+.cury{{animation:cury 22s ease-in-out infinite}}
+@keyframes curx{{0%,100%{{transform:translateX(0)}}18%{{transform:translateX(230px)}}36%{{transform:translateX(340px)}}54%{{transform:translateX(-120px)}}72%{{transform:translateX(180px)}}86%{{transform:translateX(60px)}}}}
+@keyframes cury{{0%,100%{{transform:translateY(0)}}18%{{transform:translateY(-180px)}}36%{{transform:translateY(-62px)}}54%{{transform:translateY(-210px)}}72%{{transform:translateY(60px)}}86%{{transform:translateY(-100px)}}}}
+.odo{{animation:odo 1.6s cubic-bezier(.3,0,.1,1) var(--od,0s) both}}
+@keyframes odo{{from{{transform:translateY(0)}}to{{transform:translateY(var(--oh))}}}}
+.scan{{animation:scan 9s ease-in-out var(--sd,0s) infinite alternate}}
+@keyframes scan{{from{{transform:translateX(0)}}to{{transform:translateX(var(--sw))}}}}
+.inspect{{animation:inspect var(--ip,14s) steps(var(--n)) 1s infinite}}
+@keyframes inspect{{from{{transform:translateY(0)}}to{{transform:translateY(var(--ih))}}}}
+.play{{animation:play 8s linear 1s infinite}}
+@keyframes play{{0%{{transform:translateX(0);opacity:0}}5%,95%{{opacity:1}}100%{{transform:translateX(var(--pw));opacity:0}}}}
+.nudge{{animation:nudge 6s ease-in-out 2s infinite}}
+@keyframes nudge{{0%,70%,100%{{transform:translateX(0)}}80%{{transform:translateX(5px)}}}}
+.stampin{{transform-box:fill-box;transform-origin:center;animation:stampin .55s cubic-bezier(.2,1.5,.4,1) var(--sd,0s) both,repress 16s ease-out calc(var(--sd,0s) + 4s) infinite}}
+@keyframes stampin{{from{{transform:scale(1.1)}}to{{transform:none}}}}
+@keyframes repress{{0%,4%,100%{{transform:none}}2%{{transform:scale(.965)}}}}
+@media (prefers-reduced-motion:reduce){{*,.pen *{{animation:none!important}}.plot,.pulse,.trace,.pen,.play{{display:none}}}}
 """
 
 TEXTS = []  # all strings drawn in the current piece (for subsetting)
@@ -222,6 +241,37 @@ def bom_rows():
 def founded_names():
     f = CFG.get("founded", "")
     return [p["label"] for p in CFG.get("projects", []) if p["label"] in f]
+
+
+def odometer(text, x, y, cid, size=9, ls=.4):
+    """Mono digits that roll one full turn on entrance and land on the real value (visible at t=0)."""
+    adv = size * 0.6 + ls
+    step = size * 1.5
+    out = [f'<clipPath id="{cid}"><rect x="{x-2}" y="{y-size}" width="{len(text)*adv+4:.1f}" height="{size*1.35:.1f}"/></clipPath><g clip-path="url(#{cid})">']
+    j = 0
+    for i, ch in enumerate(text):
+        cx = x + i * adv
+        if ch.isdigit():
+            d = int(ch)
+            seq = [(d + k) % 10 for k in range(10)] + [d]
+            col = "".join(f'<text x="{cx:.1f}" y="{y + k*step:.1f}">{T(n)}</text>' for k, n in enumerate(seq))
+            out.append(f'<g class="odo" style="--od:{.5 + j*.07:.2f}s;--oh:{-10*step:.1f}px">{col}</g>')
+            j += 1
+        elif ch != " ":
+            out.append(f'<text x="{cx:.1f}" y="{y}">{T(ch)}</text>')
+    out.append("</g>")
+    return f'<g font-family="{MONO}" font-weight="500" font-size="{size}" fill="{LINE}">' + "".join(out) + "</g>"
+
+
+def trace(shape_el, delay, color=GOLD, width=1.6):
+    """Gold pen pass over an existing (already visible) element. shape_el is '<path d=...' style opening without '/>'."""
+    return f'{shape_el} pathLength="1" class="trace" style="--td:{delay:.2f}s" fill="none" stroke="{color}" stroke-width="{width}"/>'
+
+
+def pen_overlay(icon_svg, delay):
+    o = icon_svg.replace(f'stroke="{LINE}"', f'stroke="{GOLD}"').replace(f'fill="{LINE}" fill-opacity=".08"', 'fill="none"')
+    o = re.sub(r"<(path|circle|rect)\b", r'<\1 pathLength="1"', o)
+    return f'<g class="pen" style="--pd:{delay:.1f}s">{o}</g>'
 
 
 # ------------------------------------------------------------------ hero (sheet 01)
@@ -353,6 +403,10 @@ def build_hero():
     for i, (k1, v1, k2, v2) in enumerate(rows):
         y = ty + 15 + i * 22.5
         big = i == 0
+        if k1 == "RECORD":
+            tb.append(f'<text x="{tx+8}" y="{y}" font-family="{MONO}" font-size="7.5" fill="{DIM}" letter-spacing="1">{T(k1)}</text>')
+            tb.append(odometer(v1, tx + 60, y, f"{u}od"))
+            continue
         tb.append(f'<text x="{tx+8}" y="{y}" font-family="{MONO}" font-size="7.5" fill="{DIM}" letter-spacing="1">{T(k1)}</text>'
                   f'<text x="{tx+60}" y="{y + (1 if big else 0)}" font-family="{COND if big else MONO}" font-weight="{700 if big else 500}" font-size="{13 if big else 9}" fill="{GOLD if big else LINE}" letter-spacing="{.6 if big else .4}">{T(v1)}</text>')
         if k2:
@@ -366,8 +420,10 @@ def build_hero():
         L = perim(poly, closed)
         pp.append(f'<polygon class="plot" style="--l:{L:.0f};animation-delay:{.1 + k*.06:.2f}s,{2.4 + k*.02:.2f}s" points="{P(poly)}" fill="none" stroke="{GOLD}" stroke-width="1.6" stroke-linejoin="round"/>')
     b.append("".join(pp))
-    b.append(f'<g class="sweep" style="--d:{W-60}px"><path d="M30 26V{H-26}" stroke="{GOLD}" stroke-opacity=".55"/>'
-             f'<path d="M22 {H/2}h16" stroke="{GOLD}"/><circle cx="30" cy="{H/2}" r="5" fill="none" stroke="{GOLD}"/></g>')
+    cx0, cy0 = 420, 330
+    b.append(f'<clipPath id="{u}fr"><rect x="22" y="22" width="{W-44}" height="{H-44}"/></clipPath><g clip-path="url(#{u}fr)" stroke="{LINE}" stroke-opacity=".28">'
+             f'<g class="curx"><path d="M{cx0} 22V{H-22}"/></g><g class="cury"><path d="M22 {cy0}H{W-22}"/></g></g>'
+             f'<g class="curx"><g class="cury"><rect x="{cx0-4}" y="{cy0-4}" width="8" height="8" fill="none" stroke="{GOLD}"/></g></g>')
     alt = (f"{CFG['name']}, {CFG['role']}. {CFG['tagline_lead']} {CFG['tagline_accent']}{CFG['tagline_rest']} "
            f"{CFG['location']}. {record().title()}.")
     return write("hero.svg", svg(W, H, alt, "".join(b), paper_defs(u))), alt
@@ -395,6 +451,9 @@ def build_tab(fname, sheet, title):
     for i in range(n + 1):
         h_ = 9 if i % 4 == 0 else 5
         b.append(f'<path d="M{x0 + i*seg:.1f} {y+4}v{h_}" stroke="{RULE}"/>')
+    b.append(trace(f'<path d="M0.5 14.5H{tw-18}L{tw-.5} 32V77.5H.5Z"', .1 + (sheet - 2) * .15, width=1.4))
+    b.append(f'<g class="scan" style="--sw:{x1-x0:.0f}px;--sd:{(sheet-2)*2.3:.1f}s"><path d="M{x0} {y-12}V{y+12}" stroke="{RULE}"/>'
+             f'<path d="M{x0-5} {y-19}h10l-5 7z" fill="{GOLD}" stroke="{RULE}"/></g>')
     return write(fname, svg(W, H, title, "".join(b), paper_defs(u)))
 
 
@@ -432,6 +491,10 @@ def build_bom():
             size -= .5
         b.append(f'<text x="{tx+190}" y="{cy+5}" font-family="{COND}" font-weight="500" font-size="{size}" fill="{LINE}" fill-opacity=".92">{T(parts)}</text>')
         b.append(f'<path d="M{tx} {y + rh - 4}H{tx+tw}" stroke="{LINE}" stroke-opacity=".16"/>')
+        b.append(trace(f'<path d="M{tx} {y + rh - 4}H{tx+tw}"', .3 + i * .09, width=1))
+    b.insert(1, f'<g class="inspect" style="--n:{len(rows)};--ih:{rh*len(rows)}px;--ip:{2*len(rows)}s">'
+                f'<rect x="{tx}" y="{top-4}" width="{tw}" height="{rh}" fill="{GOLD}" fill-opacity=".07"/>'
+                f'<path d="M{tx-6} {top}v{rh-8}" stroke="{GOLD}" stroke-width="2"/></g>')
     alt = "General note: " + general_note() + " Bill of materials: " + "; ".join(f"{a}: {', '.join(it)}" for a, it in rows)
     return write("bom.svg", svg(W, H, alt, "".join(b), paper_defs(u))), alt
 
@@ -485,7 +548,10 @@ def build_detail(i, p, founded):
     b.append(f'<text x="{tx}" y="{H-20}" font-family="{MONO}" font-size="8.5" fill="{DIM}" letter-spacing="1">{T(host.upper())}</text>')
     # drawn arrow + icon
     b.append(f'<path d="M{ox+pw-120} {H-23}h30" stroke="{DIM}" marker-end="url(#{u}ar)"/>')
-    b.append(icon(ICON_FOR.get(p["label"], "SITE"), ox + pw - 104, 26))
+    ic = icon(ICON_FOR.get(p["label"], "SITE"), ox + pw - 104, 26)
+    b.append(ic)
+    b.append(pen_overlay(ic, 1.5 + i * 3))
+    b.append(trace(f'<circle cx="{cx}" cy="{cy}" r="24"', .2 + i * .15, width=2))
     alt = f"Detail {letter}: {p['label']} ({tagline.title()}). {p['description']}"
     return write(f"detail-{i}.svg", svg(W, H, alt, "".join(b), paper_defs(u))), alt
 
@@ -513,6 +579,11 @@ def build_rev(i, n, post):
              f'<text x="{W-136}" y="{H/2-3}" font-family="{MONO}" font-size="7" fill="{DIM}" letter-spacing="1">{T("APPR.")}</text>'
              f'<text x="{W-136}" y="{H/2+11}" font-family="{MONO}" font-weight="500" font-size="10" fill="{LINE}" letter-spacing="1">{T(CFG.get("monogram", ""))}</text>')
     b.append(f'<path d="M{W-74} {H/2}h34" stroke="{GOLD if latest else DIM}" marker-end="url(#{u}ar)"/>')
+    if latest:
+        b.append(f'<rect x="0" y="2" width="4" height="{H-4}" fill="{GOLD}"/>'
+                 f'<g class="play" style="--pw:{W-20}px"><path d="M8 {H-2.5}h14" stroke="{GOLD}" stroke-width="2"/></g>')
+    else:
+        b.append(trace(f'<path d="M0 {H-2.5}H{W}"', .4 + i * .2, width=1.2))
     b.append(f'<path d="M72 8V{H-8}M182 8V{H-8}" stroke="{LINE}" stroke-opacity=".18"/>')
     alt = f"Revision {letter}, {post.get('date','')}: {title}"
     return write(f"rev-{i}.svg", svg(W, H, alt, "".join(b), paper_defs(u))), alt
@@ -525,7 +596,7 @@ def build_all_revs(label):
     x = W - w
     b = [paper(u, f'<path d="M{x+14} 6H{W}V{H-6}H{x}V20Z"/>'),
          f'<text x="{x+22}" y="{H/2+5}" font-family="{COND}" font-weight="500" font-size="13" fill="{LINE}">{T(label)}</text>'
-         f'<path d="M{W-48} {H/2}h26" stroke="{GOLD}" marker-end="url(#{u}ar)"/>']
+         f'<g class="nudge"><path d="M{W-48} {H/2}h26" stroke="{GOLD}" marker-end="url(#{u}ar)"/></g>']
     return write("all-revisions.svg", svg(W, H, label, "".join(b), paper_defs(u)))
 
 
@@ -539,11 +610,11 @@ def build_stamp(i, c):
     ink = (f'<filter id="{u}ink" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="2" seed="{3+i}" result="n"/>'
            f'<feDisplacementMap in="SourceGraphic" in2="n" scale="0.8" result="d"/><feTurbulence type="fractalNoise" baseFrequency=".35" numOctaves="2" seed="{9+i}"/>'
            f'<feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.3 1.75"/><feComposite in="d" operator="in"/></filter>')
-    body = (f'<defs>{ink}</defs><g transform="rotate({rot} {w/2} {h/2})">' + paper(u, f'<rect x="12" y="12" width="{w-24}" height="{h-24}" rx="3"/>') +
+    body = (f'<defs>{ink}</defs><g transform="rotate({rot} {w/2} {h/2})"><g class="stampin" style="--sd:{.2 + i*.18:.2f}s">' + paper(u, f'<rect x="12" y="12" width="{w-24}" height="{h-24}" rx="3"/>') +
             f'<g filter="url(#{u}ink)"><rect x="12.5" y="12.5" width="{w-25}" height="{h-25}" rx="3" fill="none" stroke="{GOLD}" stroke-width="2"/>'
             f'<rect x="17.5" y="17.5" width="{w-35}" height="{h-35}" rx="1.5" fill="none" stroke="{GOLD}" stroke-width=".8"/>'
             f'<text x="{w/2}" y="{h/2+3}" font-family="{COND}" font-weight="700" font-size="24" fill="{GOLD}" text-anchor="middle" letter-spacing="2.6">{T(label)}</text></g>'
-            f'<text x="{w/2}" y="{h/2+18}" font-family="{MONO}" font-weight="500" font-size="{8 if len(host) < 22 else 7}" fill="{LINE}" text-anchor="middle" letter-spacing=".6">{T(host)}</text></g>')
+            f'<text x="{w/2}" y="{h/2+18}" font-family="{MONO}" font-weight="500" font-size="{8 if len(host) < 22 else 7}" fill="{LINE}" text-anchor="middle" letter-spacing=".6">{T(host)}</text></g></g>')
     return write(f"stamp-{i}.svg", svg(w, h, f"{c['label']}: {host}", body, paper_defs(u)))
 
 

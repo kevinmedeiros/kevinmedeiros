@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.DS_Store
+.env
+.env.*
+*.html
+preview.png
+preview_light.png
+preview_*.png

@@ -1,0 +1,135 @@
+{
+  "name": "Kevin Medeiros",
+  "monogram": "KM",
+  "prompt": "kevinmedeiros",
+  "role": "Head of DevOps",
+  "tagline_lead": "Infrastructure that",
+  "tagline_accent": "scales",
+  "tagline_rest": ", quietly.",
+  "intro": "I'm Kevin Medeiros \u2014 9+ years designing, automating and operating resilient cloud platforms on AWS, GCP and Kubernetes, with a focus on GitOps, observability and cost.",
+  "location": "Jo\u00e3o Pessoa, Brazil \u00b7 Remote",
+  "about": [
+    "I turn sprawling infrastructure into calm, automated systems \u2014 the boring kind of reliability, the kind nobody notices because nothing breaks.",
+    "My work centers on migrating services into containerized environments, GitOps automation and observability. I also build with Python, and I've led and mentored engineering teams along the way.",
+    "I founded GanhaLic and Ligado em IA."
+  ],
+  "stack": [
+    {
+      "area": "Cloud",
+      "items": [
+        "AWS",
+        "EC2",
+        "S3",
+        "EKS",
+        "IAM",
+        "Lambda",
+        "RDS",
+        "GCP"
+      ]
+    },
+    {
+      "area": "Containers",
+      "items": [
+        "Docker",
+        "Kubernetes",
+        "k3s",
+        "Rancher",
+        "ECS"
+      ]
+    },
+    {
+      "area": "CI/CD & GitOps",
+      "items": [
+        "Argo CD",
+        "GitHub Actions",
+        "GitLab CI",
+        "Bitbucket Pipelines"
+      ]
+    },
+    {
+      "area": "Automation & IaC",
+      "items": [
+        "Terraform",
+        "Ansible",
+        "SOPS + AGE"
+      ]
+    },
+    {
+      "area": "Observability",
+      "items": [
+        "Prometheus",
+        "Grafana",
+        "CloudWatch",
+        "AppDynamics"
+      ]
+    },
+    {
+      "area": "Languages",
+      "items": [
+        "Python",
+        "Bash",
+        "Java"
+      ]
+    },
+    {
+      "area": "Data",
+      "items": [
+        "PostgreSQL",
+        "MongoDB",
+        "MySQL"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "label": "kevinm.tech",
+      "tag": "SITE",
+      "url": "https://kevinm.tech",
+      "description": "Personal site \u2014 track record, stack, and notes on GitOps, Kubernetes and cloud cost."
+    },
+    {
+      "label": "claude-mods",
+      "tag": "GITHUB",
+      "url": "https://github.com/kevinmedeiros/claude-mods",
+      "description": "Live mods for Claude Code: plan-limit projections, hand-offs between machines, and Unity + Blender helpers."
+    },
+    {
+      "label": "GanhaLic",
+      "tag": "COMPANY",
+      "url": "https://ganhalic.com.br",
+      "description": "Helps micro and small businesses in Brazil see which open PNCP tenders they can bid on."
+    },
+    {
+      "label": "Ligado em IA",
+      "tag": "COMPANY",
+      "url": "https://ligadoemia.com",
+      "description": "AI news in Portuguese, straight and always with the official source."
+    }
+  ],
+  "posts": {
+    "count": 3,
+    "feed": "https://kevinm.tech/rss.xml",
+    "all_posts_url": "https://kevinm.tech/blog/",
+    "all_posts_label": "All notes on kevinm.tech/blog"
+  },
+  "contacts": [
+    {
+      "label": "Website",
+      "url": "https://kevinm.tech"
+    },
+    {
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com/in/kevinmds"
+    },
+    {
+      "label": "Email",
+      "url": "mailto:contato@kevinm.tech"
+    },
+    {
+      "label": "Blog",
+      "url": "https://kevinm.tech/blog/"
+    }
+  ],
+  "pull_quote": "I turn sprawling infrastructure into calm, automated systems.",
+  "founded": "I founded GanhaLic and Ligado em IA."
+}

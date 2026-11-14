@@ -1,0 +1,55 @@
+name: Refresh profile
+
+on:
+  schedule:
+    - cron: "0 4 * * *"   # daily at 04:00 UTC
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - profile.config.json
+      - scripts/**
+      - assets/fonts/**
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-profile
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install font tools (per-SVG font subsetting)
+        run: python3 -m pip install --quiet fonttools brotli
+
+      - name: Fetch stats and posts
+        env:
+          # Optional PAT (read:user) as STATS_TOKEN includes private commit counts.
+          # Otherwise the public REST API is used; commits are omitted.
+          STATS_TOKEN: ${{ secrets.STATS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/fetch_profile_data.py
+
+      - name: Generate SVGs and README
+        run: python3 scripts/gen_profile.py
+
+      - name: Commit changes if any
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A assets/profile.json assets/stage README.md
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "chore: refresh profile [skip ci]"
+            git push
+          fi

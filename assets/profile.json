@@ -2,12 +2,12 @@
   "repos": 20,
   "stars": 18,
   "followers": 51,
-  "commits": 4386,
+  "commits": 4453,
   "posts": [
     {
       "title": "Migrating four products to ArgoCD without downtime",
       "url": "https://kevinm.tech/blog/gitops-with-argocd/",
-      "description": "The playbook for standardizing deployments across multiple products with ArgoCD and a GitOps workflow.",
+      "description": "The playbook for standardizing deployments across multiple products with Argo CD and a GitOps workflow.",
       "date": "May 2026"
     },
     {
@@ -23,5 +23,5 @@
       "date": "Mar 2026"
     }
   ],
-  "updated": "2026-11-14T15:48:38Z"
+  "updated": "2026-11-15T11:38:12Z"
 }

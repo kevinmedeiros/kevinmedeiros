@@ -5,7 +5,7 @@
   Art direction: direcao.md (AS-BUILT).
 -->
 
-<p align="center"><img src="assets/stage/hero.svg" width="100%" alt="Kevin Medeiros, Head of DevOps. Infrastructure that scales, quietly. João Pessoa, Brazil · Remote. 4,598 Commits  ·  20 Repos  ·  9+ Yrs." /></p>
+<p align="center"><img src="assets/stage/hero.svg" width="100%" alt="Kevin Medeiros, Head of DevOps. Infrastructure that scales, quietly. João Pessoa, Brazil · Remote. 4,617 Commits  ·  20 Repos  ·  9+ Yrs." /></p>
 
 <p align="center"><img src="assets/stage/h-bom.svg" width="100%" alt="Sheet 02: bill of materials" /><br>
 <img src="assets/stage/bom.svg" width="100%" alt="General note: I turn sprawling infrastructure into calm, automated systems — the boring kind of reliability, the kind nobody notices because nothing breaks. My work centers on migrating services into containerized environments, GitOps automation and observability. I also build with Python, and I&#x27;ve led and mentored engineering teams along the way. Bill of materials: Cloud: AWS, EC2, S3, EKS, IAM, Lambda, RDS, GCP; Containers: Docker, Kubernetes, k3s, Rancher, ECS; Observability: Prometheus, Grafana, CloudWatch, AppDynamics; CI/CD &amp; GitOps: Argo CD, GitHub Actions, GitLab CI, Bitbucket Pipelines; Automation &amp; IaC: Terraform, Ansible, SOPS + AGE; Languages: Python, Bash, Java; Data: PostgreSQL, MongoDB, MySQL" /></p>

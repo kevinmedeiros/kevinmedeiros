@@ -2,7 +2,7 @@
   "repos": 20,
   "stars": 18,
   "followers": 51,
-  "commits": 4617,
+  "commits": 4636,
   "posts": [
     {
       "title": "Migrating four products to ArgoCD without downtime",
@@ -23,5 +23,5 @@
       "date": "Mar 2026"
     }
   ],
-  "updated": "2026-11-21T11:54:26Z"
+  "updated": "2026-11-22T12:08:01Z"
 }
